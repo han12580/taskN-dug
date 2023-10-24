@@ -1,0 +1,6 @@
+tensorboard
+transformers
+pandas
+scikit-learn
+matplotlib
+wandb
