@@ -61,7 +61,7 @@ epoch = 500
 
 writer = SummaryWriter("logs")
 test = wandb.init(project="taskNLP", resume="allow")
-test.config.update(dict(epoch=50, lr=learning_rate, batch_size=32))
+test.config.update(dict(epoch=500, lr=learning_rate, batch_size=256))
 
 
 train_loss_his = []
@@ -91,8 +91,8 @@ for i in range(epoch):
         train_fold = torch.utils.data.dataset.Subset(train_dataset, train_index)
         val_fold = torch.utils.data.dataset.Subset(train_dataset, val_index)
 
-        train_data_loader = DataLoader(dataset=train_fold, batch_size=32, shuffle=True)
-        val_data_loader = DataLoader(dataset=val_fold, batch_size=32, shuffle=True)
+        train_data_loader = DataLoader(dataset=train_fold, batch_size=256, shuffle=True)
+        val_data_loader = DataLoader(dataset=val_fold, batch_size=256, shuffle=True)
 
         total_train_loss = 0
         for step, batch_data in enumerate(train_data_loader):
