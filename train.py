@@ -84,7 +84,7 @@ for i in range(epoch):
     from sklearn.model_selection import KFold
 
     all_k_step = 0
-    kf = KFold(n_splits=5, shuffle=True, random_state=0)
+    kf = KFold(n_splits=10, shuffle=True, random_state=0)
     for train_index, val_index in kf.split(train_dataset):
         print("-----------train----------")
         all_k_step+=1
