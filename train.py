@@ -53,7 +53,6 @@ for index,onemodel in enumerate(my_models):
     onemodel.load_state_dict(torch.load("model/decoder_%d.pth"%index))
     optimizer = torch.optim.Adam(onemodel.parameters(), lr=learning_rate, betas=(0.9, 0.99))
     optimizers.append(optimizer)
-my_model.load_state_dict(torch.load("model/encoder.pth"))
 # 总共的训练步数
 total_train_step = 0
 # 总共的测试步数
