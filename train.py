@@ -47,11 +47,13 @@ def myeval(pred, tar):
     return error_num,len(judge_n),1-error_num/len(judge_n)
 
 # 优化器
-learning_rate = 5e-3
+learning_rate = 5e-4
 optimizers=[]
-for onemodel in my_models:
+for index,onemodel in enumerate(my_models):
+    onemodel.load_state_dict(torch.load("model/decoder_%d.pth"%index))
     optimizer = torch.optim.Adam(onemodel.parameters(), lr=learning_rate, betas=(0.9, 0.99))
     optimizers.append(optimizer)
+my_model.load_state_dict(torch.load("model/encoder.pth"))
 # 总共的训练步数
 total_train_step = 0
 # 总共的测试步数
