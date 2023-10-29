@@ -3,14 +3,14 @@ import wandb
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from torch import nn
-from dataset import TextDataset
+from dataset import TextDataset, TextDataset_last
 from model import *
 import time
 from transformers import logging
 logging.set_verbosity_warning()
 # 加载训练数据
 bert_dir = "bert/"
-train_dataset = TextDataset()
+train_dataset = TextDataset_last()
 label_list = {'Love':0, 'Joy':1, 'Anxiety':2, 'Sorrow':3, 'Expect':4, 'Hate':5, 'Surprise':6, 'Anger':7}
 
 
@@ -19,15 +19,12 @@ label_list = {'Love':0, 'Joy':1, 'Anxiety':2, 'Sorrow':3, 'Expect':4, 'Hate':5, 
 train_data_len = len(train_dataset)
 print(f"训练集长度：{train_data_len}")
 
-numClass=8
+numClass=4
 # 创建网络模型
 my_model = bertclassify(1)
 my_model=my_model.cuda()
 
-my_models=[text_decoder().cuda(),
-           text_decoder().cuda(),
-           text_decoder().cuda(),
-           text_decoder().cuda(),
+my_models=[
            text_decoder().cuda(),
            text_decoder().cuda(),
            text_decoder().cuda(),
@@ -47,10 +44,10 @@ def myeval(pred, tar):
     return error_num,len(judge_n),1-error_num/len(judge_n)
 
 # 优化器
-learning_rate = 5e-4
+learning_rate = 5e-3
 optimizers=[]
 for index,onemodel in enumerate(my_models):
-    onemodel.load_state_dict(torch.load("model/decoder_%d.pth"%index))
+    # onemodel.load_state_dict(torch.load("model/decoder_%d.pth"%index))
     optimizer = torch.optim.Adam(onemodel.parameters(), lr=learning_rate, betas=(0.9, 0.99))
     optimizers.append(optimizer)
 # 总共的训练步数
