@@ -4,43 +4,6 @@ import os
 from transformers import BertModel, AutoTokenizer, AutoModelForMaskedLM
 import torch.nn.functional as F
 
-class ClassifierModel(nn.Module):
-    def __init__(self,
-                 bert_dir,
-                 dropout_prob=0.1):
-        super(ClassifierModel, self).__init__()
-
-        self.bert_module =  BertModel.from_pretrained("bert-base-chinese")
-
-        self.bert_config = self.bert_module.config
-
-        self.dropout_layer = nn.Dropout(dropout_prob)
-        out_dims = self.bert_config.hidden_size
-        self.obj_classifier = nn.Sequential(nn.Linear(out_dims,100),
-                                            nn.ReLU(),
-                                            nn.Linear(100, 2))
-
-    def forward(self,
-                input_ids,
-                input_mask,
-                segment_ids,
-                label_id=None):
-
-        bert_outputs = self.bert_module(
-            input_ids=input_ids.cuda(),
-            attention_mask=input_mask.cuda(),
-            token_type_ids=segment_ids.cuda()
-        )
-
-        pooled_out = bert_outputs['pooler_output']
-        pooled_out = bert_outputs[0][:, 0, :]
-
-        #对反向传播及逆行截断
-        x = pooled_out.detach()
-        out = self.obj_classifier(x)
-        out=out.softmax(dim=1)
-        return out
-
 class TextCnnModel(nn.Module):
     def __init__(self):
         super(TextCnnModel, self).__init__()
@@ -152,7 +115,7 @@ class text_decoder(nn.Module):
             [nn.Conv2d(in_channels=1, out_channels=2, kernel_size=(k, 768),) for k in [2, 3, 4]]
         )
         self.dropout = nn.Dropout(0.2)
-        self.fc = nn.Linear(2 * len([2, 3, 4]), 1)
+        self.fc = nn.Linear(2 * len([2, 3, 4]), 2)
         self.sc=nn.Sigmoid()
 
     def conv_pool(self, x, conv):
@@ -172,7 +135,7 @@ class text_decoder(nn.Module):
         out = self.sc(out)
         return out
 class bertclassify(nn.Module):
-    def __init__(self,classnum):
+    def __init__(self):
         super(bertclassify, self).__init__()
         self.bert = BertModel.from_pretrained("bert-base-chinese")
         for param in self.bert.parameters():

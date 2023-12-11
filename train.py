@@ -61,8 +61,8 @@ step = 0
 epoch = 500
 
 writer = SummaryWriter("logs")
-test = wandb.init(project="taskNLP", resume="allow")
-test.config.update(dict(epoch=500, lr=learning_rate, batch_size=256))
+# test = wandb.init(project="taskNLP", resume="allow")
+# test.config.update(dict(epoch=500, lr=learning_rate, batch_size=256))
 
 
 train_loss_his = []
@@ -118,6 +118,7 @@ for i in range(epoch):
 
                 writer.add_scalar("train_loss", loss, total_train_step)
                 allloss+=loss.data
+                optimizers[idclass].zero_grad()
 
             all_classouts=torch.cat(all_classouts,1)
             all_tars=torch.cat(all_tars,1)
@@ -126,7 +127,7 @@ for i in range(epoch):
             allerrornum_train+=errornum
             writer.add_scalar("step_acc", acc, total_train_step)
             print("epoch:",i,"k_step",all_k_step,"batch:",step,"loss:",allloss,"acc:",acc)
-            test.log({"total_train_step":total_train_step,"acc":acc})
+            # test.log({"total_train_step":total_train_step,"acc":acc})
         writer.add_scalar("train_loss_k", total_train_loss, all_k_step)
 
         # 测试开始
@@ -157,7 +158,7 @@ for i in range(epoch):
             allnum_test+=knum
             allerrornum_test+=errornum
         print( "acc", 1-allerrornum_test / allnum_test,"total_test_loss",total_test_loss)
-        test.log({"epoch_test_acc": 1-allerrornum_test / allnum_test, "epoch":i})
+        # test.log({"epoch_test_acc": 1-allerrornum_test / allnum_test, "epoch":i})
         writer.add_scalar("test_loss_k", total_test_loss, all_k_step)
     if best_acc<1-allerrornum_test / allnum_test:
         model_dir="epoch_%d/"%i
@@ -168,5 +169,5 @@ for i in range(epoch):
         best_acc=1-allerrornum_test / allnum_test
     writer.add_scalar("epoch_train_acc", 1-allerrornum_train/allnum_train, i)
     writer.add_scalar("epoch_test_acc", 1-allerrornum_test / allnum_test, i)
-    test.log({'epoch': i, "train_acc": 1-allerrornum_train/allnum_train})
-    test.log({"epoch_test_acc": 1-allerrornum_test / allnum_test, "epoch":i})
+    # test.log({'epoch': i, "train_acc": 1-allerrornum_train/allnum_train})
+    # test.log({"epoch_test_acc": 1-allerrornum_test / allnum_test, "epoch":i})
